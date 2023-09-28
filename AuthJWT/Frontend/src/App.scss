@@ -1,0 +1,19 @@
+.navbar-nav {
+  gap: 150px;
+}
+@media (max-width: 980px) {
+  .navbar-nav {
+    gap: 10px;
+  }
+}
+.input {
+  width: 40%;
+}
+.tr {
+  height: 150px;
+}
+.product-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
