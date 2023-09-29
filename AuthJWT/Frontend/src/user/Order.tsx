@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import axios from "axios";
 import { BACKEND_URL } from '../api/userApi';
+import { TraSuaType } from '../types/TraSuaType';
 
 const Order = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<TraSuaType[]>([]);
     useEffect(() => {
         axios.get(`${BACKEND_URL}/api/product`).then(res => setData(res.data)).catch(err => console.log(err));
     }, [])
     return (
         <div className="container home-ct">
-            <h1>Linh's Shop</h1>
+            <div className="ctn-header">
+                <h1>Linh's Shop</h1>
+            </div>
             <table className="table">
                 <thead>
                     <tr>
@@ -17,7 +20,7 @@ const Order = () => {
                         <th scope="col">イメージ</th>
                         <th scope="col">名前</th>
                         <th scope="col">価格</th>
-                        <th scope="col">在庫</th>
+                        <th scope="col">数量</th>
                     </tr>
                 </thead>
                 <tbody>

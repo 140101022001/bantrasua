@@ -23,3 +23,5 @@ Route::post('/logout', [AuthController::class,'logout']);
 Route::post('/refresh', [AuthController::class,'refresh']);
 
 Route::get('/product', [ProductController::class, 'index']);
+Route::post('/product/create', [ProductController::class, 'store']);
+Route::put('/product/update', [ProductController::class, 'edit']);

@@ -8,34 +8,45 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [password_confirmation, setPasswordConfirmation] = useState('');
     const [name, setName] = useState('');
-    const [err, setErr] = useState<any| undefined>();
+    const [err, setErr] = useState<any | undefined>();
     const navigate = useNavigate();
     const handleRegister = async (e: FormEvent) => {
         e.preventDefault();
         axios.defaults.withCredentials = false;
         if (password && email) {
-            await axios.post(`${BACKEND_URL}/api/register`, {email, password, password_confirmation, name}).then(res => {
-                navigate('/login', {state: { message: res.data.message }});
-            }).catch(err => setErr(err)
+            await axios.post(`${BACKEND_URL}/api/register`, { email, password, password_confirmation, name }).then(res => {
+                navigate('/login', { state: { message: res.data.message } });
+            }).catch(error => {
+                setErr(error.response.data.errors);
+                console.log(error);
+            }
             );
         }
     }
     return (
         <div className="container">
             <h1>Register</h1>
-            {err && <li className='alert alert-danger'>{err.response.data.error}</li>}
+            {err?.name && err?.name?.map((item) => {
+                return <li className='alert alert-danger' key={item}>{item}</li>
+            })}
+            {err?.password && err?.password?.map((item) => {
+                return <li className='alert alert-danger' key={item}>{item}</li>
+            })}
+            {err?.email && err?.email?.map((item) => {
+                return <li className='alert alert-danger' key={item}>{item}</li>
+            })}
             <form onSubmit={handleRegister}>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
-                    <input type="email" name="email" value={email} className="form-control input" id="email" onChange={(e) => setEmail(e.target.value)}/>
+                    <input type="email" name="email" value={email} className="form-control input" id="email" onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                    <input type="password" name="password" value={password} className="form-control input" id="exampleInputPassword1" onChange={(e) => setPassword(e.target.value)}/>
+                    <input type="password" name="password" value={password} className="form-control input" id="exampleInputPassword1" onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="confirmationPassword" className="form-label">Confirmation Password</label>
-                    <input type="password" name="password_confirmation" value={password_confirmation} className="form-control input" id="confirmationPassword" onChange={(e) => setPasswordConfirmation(e.target.value)}/>
+                    <input type="password" name="password_confirmation" value={password_confirmation} className="form-control input" id="confirmationPassword" onChange={(e) => setPasswordConfirmation(e.target.value)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Full Name</label>
