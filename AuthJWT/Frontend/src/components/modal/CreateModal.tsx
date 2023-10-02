@@ -50,9 +50,13 @@ const CreateModal = ({ setData, setSuccess }: { setData: any, setSuccess: any })
                     setData((previous: TraSuaType[]) => [...previous, res.data.product]);
                     setModal(false);
                     setSuccess('商品を追加しました。');
-                }).catch(err =>
-                    setErr(err)
+                }).catch(error => {
+                    console.log(error);
+                    setErr(error.response.data.message)
+                }
                 );
+        } else {
+            setErr('全て情報を入力してください。')
         }
     }
     return (
@@ -68,7 +72,7 @@ const CreateModal = ({ setData, setSuccess }: { setData: any, setSuccess: any })
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            {err && <li className='alert alert-danger'>{err.response.data.message}</li>}
+                            {err && <li className='alert alert-danger'>{err}</li>}
                             <form>
                                 <div className="mb-3">
                                     <label htmlFor="name" className="form-label">商品名</label>

@@ -7,6 +7,7 @@ import Login from './user/Login';
 import Mypage from './user/Mypage';
 import AccessDenied from './user/AccessDenied';
 import Order from './user/Order';
+import History from './user/History';
 
 function App() {
   return(
@@ -19,6 +20,7 @@ function App() {
         <Route path='/mypage' element={<Mypage/>}/>
         <Route path='/access-denied' element={<AccessDenied/>}/>
         <Route path='/order' element={<Order/>}/>
+        <Route path='/history' element={<History/>}/>
       </Routes>
     </BrowserRouter>
   )

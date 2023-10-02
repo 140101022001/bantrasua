@@ -5,12 +5,15 @@ type UserType = {
         jwt: string,
         user: {
             id?: string,
-            role_id?: number
+            role_id?: number,
+            money?: string,
+            email?: string,
+            name?:string
         }
     },
-    isFetching: false,
-    isError: false,
-    isRemember: false
+    isFetching: boolean,
+    isError: boolean,
+    isRemember: boolean
 }
 
 const UserInitialState: UserType = {
@@ -63,7 +66,7 @@ const AuthSlice = createSlice({
         },
         userChangeInfo: (state, actions) => {
             state.isFetching = false,
-            state.CurrentUser = actions.payload,
+            state.CurrentUser.user = actions.payload,
             state.isError = false
         },
     }

@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { BACKEND_URL } from '../../api/userApi';
 import axios from 'axios';
 
-const EditModal = ({ data, index }: { data: TraSuaType[], index: number }) => {
+const EditModal = ({ data, index, setData, setSuccess }: { data: TraSuaType[], index: number, setData: any, setSuccess:any }) => {
     const [form, setForm] = useState(data[index]);
+    const [err, setErr] = useState<any | undefined>();
     const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -29,18 +30,23 @@ const EditModal = ({ data, index }: { data: TraSuaType[], index: number }) => {
     const handleEdit = async () => {
         await axios.put(`${BACKEND_URL}/api/product/update`, form)
             .then((res: any) => {
-                // setForm();
-            }).catch(err =>
-                console.log(err)
+                const newData = data.map(item =>
+                    item.id === res.data.product.id ? res.data.product : item
+                );
+                setData(newData);
+                setSuccess('商品を修正しました。');
+                setErr(undefined);
+                const closeButton = document.getElementById(`close-btn-edit${index}`);
+                closeButton?.click();
+            }).catch(error =>
+                setErr(error.response.data.errors)
             );
     }
-    console.log(form);
-    
     return (
         <>
-            <button type="button" data-bs-toggle="modal" data-bs-target={`#editModal${index}`} style={{ outline: 'none', border: 'none' }} title='edit'>
-                <Icon icon="bx:edit" width="24" height="24" />
-            </button>
+            <span data-bs-toggle="modal" data-bs-target={`#editModal${index}`} style={{ outline: 'none', border: 'none' }} title='edit' className='icon-btn'>
+                <Icon icon="typcn:edit" width="24" height="24" />
+            </span>
             <div className="modal fade" id={`editModal${index}`} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -49,7 +55,9 @@ const EditModal = ({ data, index }: { data: TraSuaType[], index: number }) => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            {/* {err && <li className='alert alert-danger'>{err.response.data.message}</li>} */}
+                            {err?.name && err?.name?.map((item) => {
+                                return <li className='alert alert-danger' key={item}>{item}</li>
+                            })}
                             <form>
                                 <div className="mb-3">
                                     <label htmlFor={`name${index}`} className="form-label">商品名</label>
@@ -67,7 +75,7 @@ const EditModal = ({ data, index }: { data: TraSuaType[], index: number }) => {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" id='close-btn-edit'>閉じる</button>
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" id={`close-btn-edit${index}`}>閉じる</button>
                             <button type="button" className="btn btn-primary" onClick={handleEdit}>修正</button>
                         </div>
                     </div>

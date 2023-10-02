@@ -55,10 +55,32 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->price = $request->price;
         $product->save();
+        $updatedProduct = Products::find($request->id);
         return response()->json([
             'status' => 200,
-            'message' => 'Created!',
-            'product' => $product
+            'message' => 'Updated!',
+            'product' => $updatedProduct
+        ]);
+    }
+    public function delete(Request $request)
+    {
+        $product = Products::find($request->id);
+        $product->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Deleted!'
+        ]);
+    }
+    public function charge(Request $request)
+    {
+        $product = Products::find($request->id);
+        $product->quantity = $request->quantity;
+        $product->save();
+        $updatedProduct = Products::find($request->id);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Updated!',
+            'product' => $updatedProduct
         ]);
     }
 }

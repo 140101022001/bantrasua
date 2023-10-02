@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,10 @@ Route::post('/refresh', [AuthController::class,'refresh']);
 Route::get('/product', [ProductController::class, 'index']);
 Route::post('/product/create', [ProductController::class, 'store']);
 Route::put('/product/update', [ProductController::class, 'edit']);
+Route::delete('/product/delete', [ProductController::class, 'delete']);
+Route::put('/product/charge', [ProductController::class, 'charge']);
+
+Route::get('/order', [OrderController::class, 'index']);
+Route::get('/order/{user_id}', [OrderController::class, 'orderById']);
+Route::post('/order/create', [OrderController::class, 'order']);
+
