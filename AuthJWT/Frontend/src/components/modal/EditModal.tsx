@@ -3,8 +3,9 @@ import { TraSuaType } from '../../types/TraSuaType';
 import { useState } from 'react';
 import { BACKEND_URL } from '../../api/userApi';
 import axios from 'axios';
+import { productResponse } from './ChargeModal';
 
-const EditModal = ({ data, index, setData, setSuccess }: { data: TraSuaType[], index: number, setData: any, setSuccess:any }) => {
+const EditModal = ({ data, index, setData, setSuccess }: { data: TraSuaType[], index: number, setData: (data: TraSuaType[]) => void, setSuccess: (mes: string)=>void }) => {
     const [form, setForm] = useState(data[index]);
     const [err, setErr] = useState<any | undefined>();
     const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +30,7 @@ const EditModal = ({ data, index, setData, setSuccess }: { data: TraSuaType[], i
     }
     const handleEdit = async () => {
         await axios.put(`${BACKEND_URL}/api/product/update`, form)
-            .then((res: any) => {
+            .then((res: productResponse) => {
                 const newData = data.map(item =>
                     item.id === res.data.product.id ? res.data.product : item
                 );

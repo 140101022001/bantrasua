@@ -8,6 +8,8 @@ import Mypage from './user/Mypage';
 import AccessDenied from './user/AccessDenied';
 import Order from './user/Order';
 import History from './user/History';
+import Manegement from './user/Manegement';
+import Benefit from './user/Benefit';
 
 function App() {
   return(
@@ -21,6 +23,8 @@ function App() {
         <Route path='/access-denied' element={<AccessDenied/>}/>
         <Route path='/order' element={<Order/>}/>
         <Route path='/history' element={<History/>}/>
+        <Route path='/manegement' element={<Manegement/>} />
+        <Route path='/benefit' element={<Benefit/>} />
       </Routes>
     </BrowserRouter>
   )

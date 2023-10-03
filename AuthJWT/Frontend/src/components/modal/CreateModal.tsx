@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CreateTraSua, TraSuaType } from '../../types/TraSuaType';
 import { Icon } from '@iconify/react';
 import { BACKEND_URL } from '../../api/userApi';
 import axios from 'axios';
 
+type res = {
+    data: {
+        product: TraSuaType
+    }
+}
 
 const state: CreateTraSua = {
     name: '',
@@ -12,16 +17,9 @@ const state: CreateTraSua = {
     price: 0
 }
 
-const CreateModal = ({ setData, setSuccess }: { setData: any, setSuccess: any }) => {
+const CreateModal = ({ setData, setSuccess }: { setData: (data: TraSuaType[]) => void, setSuccess: (mes: string)=>void }) => {
     const [form, setForm] = useState(state);
-    const [modal, setModal] = useState<boolean>(true);
     const [err, setErr] = useState('');
-    useEffect(() => {
-        if (!modal) {
-            const close = document.getElementById('close-btn');
-            close?.click();
-        }
-    }, [modal]);
     const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -46,9 +44,11 @@ const CreateModal = ({ setData, setSuccess }: { setData: any, setSuccess: any })
     const handleCreate = async () => {
         if (form.img_url && form.name && form.price) {
             await axios.post(`${BACKEND_URL}/api/product/create`, form)
-                .then((res: any) => {
-                    setData((previous: TraSuaType[]) => [...previous, res.data.product]);
-                    setModal(false);
+                .then((res: res) => {
+                    setForm(state);
+                    setData(previous => [...previous, res.data.product]);
+                    const close = document.getElementById('close-btn');
+                    close?.click();
                     setSuccess('商品を追加しました。');
                 }).catch(error => {
                     console.log(error);
@@ -80,11 +80,11 @@ const CreateModal = ({ setData, setSuccess }: { setData: any, setSuccess: any })
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="price" className="form-label">価格</label>
-                                    <input type="number" name='price' value={form.price} className="form-control input" id="price" onChange={handleChangeForm} />
+                                    <input type="number" name='price' value={form.price === 0 ? "" : form.price} className="form-control input" id="price" onChange={handleChangeForm} />
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label" htmlFor="quantity">数量</label>
-                                    <input type="number" name='quantity' value={form.quantity} className="form-control input" id="quantity" onChange={handleChangeForm} />
+                                    <input type="number" name='quantity' value={form.quantity === 0 ? "" : form.quantity} className="form-control input" id="quantity" onChange={handleChangeForm} />
                                 </div>
                                 {form.img_url && <img src={form.img_url} alt='abc' style={{ width: '250px', height: '250px' }}></img>}
                                 <div className="mb-3">

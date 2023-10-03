@@ -8,14 +8,29 @@ import CreateModal from "./components/modal/CreateModal";
 import EditModal from "./components/modal/EditModal";
 import { Icon } from '@iconify/react';
 import ChargeModal from "./components/modal/ChargeModal";
+import ReactPaginate from 'react-paginate';
 
+type response = {
+    data: TraSuaType[]
+}
 const Home = () => {
     const { user } = useAuth();
     const [data, setData] = useState<TraSuaType[]>([]);
     const [success, setSuccess] = useState<string>('');
+    const itemsPerPage = 4;
+    const [itemOffset, setItemOffset] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/api/product`).then(res => setData(res.data)).catch(err => console.log(err));
+        axios.get(`${BACKEND_URL}/api/product`).then((res: response) => setData(res.data)).catch(err => console.log(err));
     }, [])
+    const changePage = (event: { selected: number}) => {
+        setCurrentPage(event.selected);
+        const newOffset = (event.selected * itemsPerPage) % data.length;
+        setItemOffset(newOffset);
+    };
+    const endOffset = itemOffset + itemsPerPage;
+    const currentItems = data.slice(itemOffset, endOffset);
+    const pageCount = Math.ceil(data.length / itemsPerPage);
     const handleDelete =(id: number, name: string) => {
         if (window.confirm(`${name}を削除します。よろしでしょか？`)) {
             console.log(id);
@@ -39,7 +54,22 @@ const Home = () => {
                 <h1>Linh's Shop</h1>
                 <CreateModal setData={setData} setSuccess={setSuccess} />
             </div>
-            {success && <li className='alert alert-success'>{success}</li>}
+            <div style={{ width: '100%', marginTop: '20px' }}>
+                <div style={{ float: 'right' }}>
+                    <ReactPaginate
+                        previousLabel={"Previous"}
+                        nextLabel={"Next"}
+                        pageCount={pageCount}
+                        onPageChange={changePage}
+                        containerClassName={"paginationBttns"}
+                        previousLinkClassName={"previousBttn"}
+                        nextLinkClassName={"nextBttn"}
+                        disabledClassName={"paginationDisabled"}
+                        activeClassName={"paginationActive"}
+                    />
+                </div>
+            </div>
+            {success && <li className='alert alert-success' style={{ marginTop: '60px' }}>{success}</li>}
             <table className="table">
                 <thead>
                     <tr>
@@ -53,10 +83,10 @@ const Home = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data?.map((item, index) => {
+                    {currentItems?.map((item, index) => {
                         return (
                             <tr className="tr" key={item.id}>
-                                <th scope="row">{index + 1}</th>
+                                <th scope="row">{(currentPage * itemsPerPage) + (index + 1)}</th>
                                 <td><img className="product-img" src={item.img_url} alt={item.img_url} /></td>
                                 <td>{item.name}</td>
                                 <td>{item.price}￥</td>

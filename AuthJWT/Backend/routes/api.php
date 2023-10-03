@@ -32,4 +32,8 @@ Route::put('/product/charge', [ProductController::class, 'charge']);
 Route::get('/order', [OrderController::class, 'index']);
 Route::get('/order/{user_id}', [OrderController::class, 'orderById']);
 Route::post('/order/create', [OrderController::class, 'order']);
+Route::put('/deposit/{user_id}', [OrderController::class, 'deposit']);
+Route::put('/order/update', [OrderController::class, 'updateStatus']);
+Route::get('/benefit', [OrderController::class, 'benefit']);
+
 

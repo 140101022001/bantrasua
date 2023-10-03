@@ -3,8 +3,13 @@ import { useState } from 'react';
 import { BACKEND_URL } from '../../api/userApi';
 import axios from 'axios';
 import { TraSuaType } from '../../types/TraSuaType';
-
-const ChargerModal = ({ data, id, sum, setData, setSuccess }: { data: TraSuaType[], id: number, sum: number, setData: any, setSuccess: any }) => {
+export type productResponse = {
+    data: {
+        product: TraSuaType,
+        money?:string
+    };
+}
+const ChargerModal = ({ data, id, sum, setData, setSuccess }: { data: TraSuaType[], id: number, sum: number, setData: (data: TraSuaType[]) => void, setSuccess: (mes: string)=>void }) => {
     const [quantity, setQuantity] = useState(0);
     const [err, setErr] = useState('');
     const count = sum;
@@ -15,10 +20,11 @@ const ChargerModal = ({ data, id, sum, setData, setSuccess }: { data: TraSuaType
                 quantity: count + quantity
             }
             axios.put(`${BACKEND_URL}/api/product/charge`, body)
-                .then((res: any) => {
+                .then((res: productResponse) => {
                     const updatedArray = data.map(item =>
                         item.id === res.data.product.id ? res.data.product : item
                     );
+                    setQuantity(0);
                     setData(updatedArray);
                     setSuccess('チャージしました。');
                     setErr('');
@@ -41,13 +47,13 @@ const ChargerModal = ({ data, id, sum, setData, setSuccess }: { data: TraSuaType
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="staticBackdropLabel">商品を修正する</h5>
+                            <h5 className="modal-title" id="staticBackdropLabel">商品を入庫する</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <form>
                                 {err && <li className='alert alert-danger'>{err}</li>}
-                                <div className="mb-3">
+                                <div className="mb-3 list-div">
                                     <div>
                                         <span>現在数量: {count}個</span>
                                     </div>
@@ -56,8 +62,8 @@ const ChargerModal = ({ data, id, sum, setData, setSuccess }: { data: TraSuaType
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor={`product-name${id}`} className="form-label">商品名</label>
-                                    <input type="number" name='quantity' value={quantity} className="form-control input" id={`product-name${id}`} onChange={(e) => setQuantity(Number(e.target.value))} />
+                                    <label htmlFor={`product-name${id}`} className="form-label">数量:</label>
+                                    <input type="number" name='quantity' value={quantity === 0 ? "": quantity} className="form-control input" id={`product-name${id}`} onChange={(e) => setQuantity(Number(e.target.value))} />
                                 </div>
                             </form>
                         </div>

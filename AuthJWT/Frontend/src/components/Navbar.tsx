@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { userLogoutSuccess } from '../redux/slice/authSlice';
 
 const Navbar = () => {
-    const { jwt } = useAuth();
+    const { jwt, money } = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch(); 
     const handleLogout = () => {
@@ -42,9 +42,14 @@ const Navbar = () => {
                             <li className="nav-item">
                                 <div className="nav-link active" aria-current="page" onClick={orderPage} style={{cursor: 'pointer'}}>Order</div>
                             </li>
-                            {jwt && <li className="nav-item" onClick={handleLogout} style={{cursor: 'pointer'}}>
-                                <div className="nav-link active" aria-current="page">Logout</div>
-                            </li>}
+                            {jwt && <>
+                                <li className="nav-item">
+                                    <div className="nav-link active" aria-current="page">{money}￥</div>
+                                </li>
+                                <li className="nav-item" onClick={handleLogout} style={{cursor: 'pointer'}}>
+                                    <div className="nav-link active" aria-current="page">Logout</div>
+                                </li>
+                            </>}
                         </ul>
                     </div>
                 </div>
