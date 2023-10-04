@@ -5,8 +5,12 @@ export interface OrderType {
     name: string,
     img_url: string,
     price: number,
-    quantity: string,
+    quantity: number,
     sum: string,
     created_at: string
     status: number
+}
+export enum SearchType {
+    ORDER = 'order',
+    TRASUA = 'trasua'
 }

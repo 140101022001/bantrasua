@@ -18,7 +18,6 @@ const Login = () => {
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-        axios.defaults.withCredentials = false;
         if (password && email) {
             await axios.post(`${BACKEND_URL}/api/login`, { email, password }).then((res: any) => {
                 setToken(res.data.access_token);

@@ -1,8 +1,13 @@
 import { BACKEND_URL, changeTime, getStatus } from "../api/userApi"
 import { useState, useEffect } from 'react';
 import axios from "axios";
-import { OrderType } from "../types/OrderType";
+import { OrderType, SearchType } from "../types/OrderType";
 import ReactPaginate from 'react-paginate';
+import usePaginate from "../hooks/usePaginate";
+import { Search } from "../components/Search";
+import { useDispatch } from "react-redux";
+import { orderState } from "../redux/slice/trasuaSlice";
+import { Link } from "react-router-dom";
 
 export enum status {
     DONE = 'DONE',
@@ -10,26 +15,19 @@ export enum status {
 }
 const Manegement = () => {
     const [data, setData] = useState<OrderType[]>([]);
-    const itemsPerPage = 4;
-    const [itemOffset, setItemOffset] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [type, setType] = useState<string>('today');
+    const { changePage, currentItems, currentPage, pageCount, itemsPerPage } = usePaginate(data);
+    const dispatch = useDispatch();
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/api/order`)
+        axios.get(`${BACKEND_URL}/api/order/management/${type}`)
             .then((res: { data: OrderType[] }) => {
                 setData(res.data);
+                dispatch(orderState(res.data))
             })
             .catch(err => {
                 console.log(err);
             })
-    }, []);
-    const changePage = (event: { selected: number}) => {
-        setCurrentPage(event.selected);
-        const newOffset = (event.selected * itemsPerPage) % data.length;
-        setItemOffset(newOffset);
-    };
-    const endOffset = itemOffset + itemsPerPage;
-    const currentItems = data.slice(itemOffset, endOffset);
-    const pageCount = Math.ceil(data.length / itemsPerPage);
+    }, [type]);
     const handleChangeStatus = (id: number) => {
         axios.put(`${BACKEND_URL}/api/order/update`, { id, type: status.DONE })
             .then(() => {
@@ -46,8 +44,10 @@ const Manegement = () => {
         <div className="container home-ct">
             <div className="ctn-header">
                 <h1>Linh's Shop</h1>
+                <Link to='/benefit' className="btn btn-warning" style={{color: 'white'}}>売上管理</Link>
             </div>
             <div style={{ width: '100%', marginTop: '20px' }}>
+                <Search type={SearchType.ORDER} setOrder={setData} />
                 <div style={{ float: 'right' }}>
                     <ReactPaginate
                         previousLabel={"Previous"}
@@ -61,6 +61,10 @@ const Manegement = () => {
                         activeClassName={"paginationActive"}
                     />
                 </div>
+            </div>
+            <div style={{ display: 'flex', marginTop: '80px', gap: '20px'}}>
+                <button className="btn btn-info" onClick={() => setType('today')}><span>今日</span></button>
+                <button className="btn btn-info" onClick={() => setType('all')}><span>全て</span></button>
             </div>
             {currentItems.length > 0 ? <table className="table">
                 <thead>
@@ -88,8 +92,8 @@ const Manegement = () => {
                                 <td>{item.price}</td>
                                 <td>{item.quantity}</td>
                                 <td>{item.sum}</td>
-                                <td>{changeTime(item.created_at)}</td>
-                                <td>{getStatus(item.status)}</td>
+                                <td>{changeTime(String(item.created_at))}</td>
+                                <td>{getStatus(Number(item.status))}</td>
                                 <td>{item.status === 0 ?
                                     <button className='btn btn-success' onClick={() => handleChangeStatus(item.id)}>準備完了</button>
                                     :

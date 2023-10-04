@@ -9,6 +9,11 @@ import EditModal from "./components/modal/EditModal";
 import { Icon } from '@iconify/react';
 import ChargeModal from "./components/modal/ChargeModal";
 import ReactPaginate from 'react-paginate';
+import usePaginate from "./hooks/usePaginate";
+import { Search } from "./components/Search";
+import { SearchType } from "./types/OrderType";
+import { useDispatch } from "react-redux";
+import { trasuaState } from "./redux/slice/trasuaSlice";
 
 type response = {
     data: TraSuaType[]
@@ -17,23 +22,16 @@ const Home = () => {
     const { user } = useAuth();
     const [data, setData] = useState<TraSuaType[]>([]);
     const [success, setSuccess] = useState<string>('');
-    const itemsPerPage = 4;
-    const [itemOffset, setItemOffset] = useState(0);
-    const [currentPage, setCurrentPage] = useState(0);
+    const {changePage, currentItems, currentPage, pageCount, itemsPerPage} = usePaginate(data);
+    const dispatch = useDispatch();
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/api/product`).then((res: response) => setData(res.data)).catch(err => console.log(err));
+        axios.get(`${BACKEND_URL}/api/product`).then((res: response)  => { 
+            setData(res.data)
+            dispatch(trasuaState(res.data));
+        }).catch(err => console.log(err));
     }, [])
-    const changePage = (event: { selected: number}) => {
-        setCurrentPage(event.selected);
-        const newOffset = (event.selected * itemsPerPage) % data.length;
-        setItemOffset(newOffset);
-    };
-    const endOffset = itemOffset + itemsPerPage;
-    const currentItems = data.slice(itemOffset, endOffset);
-    const pageCount = Math.ceil(data.length / itemsPerPage);
     const handleDelete =(id: number, name: string) => {
         if (window.confirm(`${name}を削除します。よろしでしょか？`)) {
-            console.log(id);
             axios.delete(`${BACKEND_URL}/api/product/delete`, { data: { id: id } })
             .then(res => {
                 console.log(res);
@@ -55,6 +53,7 @@ const Home = () => {
                 <CreateModal setData={setData} setSuccess={setSuccess} />
             </div>
             <div style={{ width: '100%', marginTop: '20px' }}>
+                <Search type={SearchType.TRASUA} setTraSua={setData} />
                 <div style={{ float: 'right' }}>
                     <ReactPaginate
                         previousLabel={"Previous"}

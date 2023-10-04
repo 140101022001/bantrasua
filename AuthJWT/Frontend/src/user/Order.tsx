@@ -6,25 +6,24 @@ import OrderModal from '../components/modal/OrderModal';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import ReactPaginate from 'react-paginate';
+import usePaginate from '../hooks/usePaginate';
+import { Search } from '../components/Search';
+import { SearchType } from '../types/OrderType';
+import { useDispatch } from 'react-redux';
+import { trasuaState } from '../redux/slice/trasuaSlice';
 
 const Order = () => {
     const { role_id } = useAuth();
     const [data, setData] = useState<TraSuaType[]>([]);
-    const itemsPerPage = 4;
-    const [itemOffset, setItemOffset] = useState(0);
+    const {changePage, currentItems, currentPage, pageCount, itemsPerPage} = usePaginate(data);
     const [success, setSuccess] = useState<string>('');
-    const [currentPage, setCurrentPage] = useState(0);
+    const dispatch = useDispatch();
     useEffect(() => {
-        axios.get(`${BACKEND_URL}/api/product`).then((res: { data: TraSuaType[] }) => setData(res.data)).catch(err => console.log(err));
+        axios.get(`${BACKEND_URL}/api/product`).then((res: { data: TraSuaType[] }) => {
+            setData(res.data)
+            dispatch(trasuaState(res.data));
+        }).catch(err => console.log(err));
     }, [])
-    const changePage = (event: { selected: number}) => {
-        setCurrentPage(event.selected);
-        const newOffset = (event.selected * itemsPerPage) % data.length;
-        setItemOffset(newOffset);
-    };
-    const endOffset = itemOffset + itemsPerPage;
-    const currentItems = data.slice(itemOffset, endOffset);
-    const pageCount = Math.ceil(data.length / itemsPerPage);
     return (
         <div className="container home-ct">
             <div className="ctn-header">
@@ -32,6 +31,7 @@ const Order = () => {
                 {role_id == 2 && <Link to='/history' className="btn btn-info" style={{ display: 'flex', color: 'white', alignItems: 'center' }}><span>注文履歴を見る</span></Link>}
             </div>
             <div style={{ width: '100%', marginTop: '20px' }}>
+                <Search type={SearchType.TRASUA} setTraSua={setData} />
                 <div style={{ float: 'right' }}>
                     <ReactPaginate
                         previousLabel={"Previous"}

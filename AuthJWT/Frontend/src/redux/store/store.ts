@@ -11,15 +11,16 @@ import {
     REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import trasuaSlice from "../slice/trasuaSlice";
 
 const persistConfig = {
     key: 'root',
     version: 1,
     storage,
-    blacklist:['job', '_persist']
+    blacklist:['job', '_persist', 'trasua']
 }
 
-const rootReducer = combineReducers({ auth: authSlice})
+const rootReducer = combineReducers({ auth: authSlice, trasua: trasuaSlice})
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 

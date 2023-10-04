@@ -98,4 +98,20 @@ a {
   color: black;
   background-color: yellow;
 }
+.search-top {
+  display: flex;
+  float: left;
+  align-items: center;
+  svg {
+    height: 38px;
+    width: 30px;
+    background-color: #f1f2f3;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .search-input {
+    width: 500px;
+  }
+}
 

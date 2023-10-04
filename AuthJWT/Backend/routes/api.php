@@ -29,7 +29,7 @@ Route::put('/product/update', [ProductController::class, 'edit']);
 Route::delete('/product/delete', [ProductController::class, 'delete']);
 Route::put('/product/charge', [ProductController::class, 'charge']);
 
-Route::get('/order', [OrderController::class, 'index']);
+Route::get('/order/management/{time}', [OrderController::class, 'index']);
 Route::get('/order/{user_id}', [OrderController::class, 'orderById']);
 Route::post('/order/create', [OrderController::class, 'order']);
 Route::put('/deposit/{user_id}', [OrderController::class, 'deposit']);

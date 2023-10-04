@@ -9,6 +9,8 @@ type res = {
         status?: number;
         thisMonthSum?: number;
         todaySum?: number;
+        allQuantity?: number;
+        todayQuantity?: number;
     };
 };
 const state: res = {
@@ -19,6 +21,8 @@ const state: res = {
         status: 0,
         thisMonthSum: 0,
         todaySum: 0,
+        allQuantity: 0,
+        todayQuantity: 0,
     }
 }
 const Benefit = () => {
@@ -39,7 +43,9 @@ const Benefit = () => {
             <div style={{ display: "flex", gap: "50px" }}>
                 <div style={{ width: "50%" }}>
                     <div className="mypage-main">
+                        <strong>販売済み商品の合計: {data.data.allQuantity}個</strong>
                         <strong>今までの収入: {data.data.allSum}￥</strong>
+                        <strong>今日の販売済み商品の合計: {data.data.todayQuantity}個</strong>
                         <strong>今日の収入: {data.data.todaySum}￥</strong>
                         <strong>今月の収入： {data.data.thisMonthSum}￥</strong>
                         <strong>先月の収入： {data.data.lastMonthSum}￥</strong>

@@ -11,14 +11,22 @@ use stdClass;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index($time)
     {
+        $currentDate = now()->toDateString();
         $data = [];
-        $orders = Order::orderBy('created_at', 'desc')->get();
-        foreach($orders as $order) {
+        $orders = [];
+        if ($time == 'all') {
+            $orders = Order::orderBy('created_at', 'desc')->get();
+        } else {
+            $orders = Order::orderBy('created_at', 'desc')
+                ->whereDate('created_at', $currentDate)
+                ->get();
+        }
+        foreach ($orders as $order) {
             $product = Products::find($order->product_id);
             $user = User::find($order->user_id);
-            if($product && $user) {
+            if ($product && $user) {
                 $item = new stdClass();
                 $item->id = $order->id;
                 $item->title = $order->title;
@@ -99,7 +107,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'deposit' => 'numeric|min:99'
-        ],[
+        ], [
             'deposit.min' => '100円以上を入力してください。'
         ]);
         $user = User::find($user_id);
@@ -122,16 +130,50 @@ class OrderController extends Controller
             $user = User::find($request->user_id);
             $user->money = $user->money + ($request->sum / 2);
             $user->save();
+            $products = Products::where('name', $request->name)->get();
+            foreach ($products as $product) {
+                if ($product) {
+                    $product->quantity = $product->quantity + $request->quantity;
+                    $product->save();
+                }
+            }
             $order->status = 2;
             $order->save();
         }
         return response()->json([
             'status' => 200,
             'message' => 'Updated!',
+            'product' => $products
         ]);
     }
     public function benefit()
     {
+        function getSum($datas)
+        {
+            $sum = 0;
+            foreach ($datas as $data) {
+                if ($data) {
+                    if ($data->status == 1) {
+                        $sum += $data->sum;
+                    } elseif ($data->status == 1) {
+                        $sum += ($data->sum / 2);
+                    }
+                }
+            }
+            return $sum;
+        }
+        function getQuantity($datas)
+        {
+            $quantity = 0;
+            foreach ($datas as $data) {
+                if ($data) {
+                    if ($data->status == 1) {
+                        $quantity += $data->quantity;
+                    }
+                }
+            }
+            return $quantity;
+        }
         $allSum = 0;
         $todaySum = 0;
         $thisMonthSum = 0;
@@ -145,41 +187,24 @@ class OrderController extends Controller
         } else {
             $lastMonth = $currentMonth - 1;
         }
-        $allOrders = Order::where('status', '=', 1)->get();
-        foreach($allOrders as $allOrder) {
-            if ($allOrder) {
-                $allSum += $allOrder->sum;
-            }
-        }
+        $allOrders = Order::all();
         $todayOrders = DB::table('orders')
-        ->where('status', 1)
-        ->whereDate('created_at', $currentDate)
-        ->get();
-        foreach($todayOrders as $todayOrder) {
-            if ($todayOrder) {
-                $todaySum += $todayOrder->sum;
-            }
-        }
+            ->whereDate('created_at', $currentDate)
+            ->get();
         $thisMonthOrders = DB::table('orders')
-        ->where('status', 1)
-        ->whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $currentMonth)
-        ->get();
-        foreach($thisMonthOrders as $thisMonthOrder) {
-            if ($thisMonthOrder) {
-                $thisMonthSum += $thisMonthOrder->sum;
-            }
-        }
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
+            ->get();
         $lastMonthOrders = DB::table('orders')
-        ->where('status', 1)
-        ->whereYear('created_at', $currentYear)
-        ->whereMonth('created_at', $lastMonth)
-        ->get();
-        foreach($lastMonthOrders as $lastMonthOrder) {
-            if ($lastMonthOrder) {
-                $lastMonthSum += $lastMonthOrder->sum;
-            }
-        }
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $lastMonth)
+            ->get();
+        $allSum = getSum($allOrders);
+        $todaySum = getSum($todayOrders);
+        $thisMonthSum = getSum($thisMonthOrders);
+        $lastMonthSum = getSum($lastMonthOrders);
+        $todayQuantity = getQuantity($todayOrders);
+        $allQuantity = getQuantity($allOrders);
         $growth = 0;
         if ($thisMonthSum && $lastMonthSum) {
             $growth = ($thisMonthSum / $lastMonthSum) * 100;
@@ -190,6 +215,8 @@ class OrderController extends Controller
             'todaySum' => $todaySum,
             'thisMonthSum' => $thisMonthSum,
             'lastMonthSum' => $lastMonthSum,
+            'todayQuantity' => $todayQuantity,
+            'allQuantity' => $allQuantity,
             'growth' => $growth,
         ]);
     }
