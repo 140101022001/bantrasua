@@ -10,6 +10,7 @@ import Order from './user/Order';
 import History from './user/History';
 import Manegement from './user/Manegement';
 import Benefit from './user/Benefit';
+import NotFound from './user/NotFound';
 
 function App() {
   return(
@@ -25,6 +26,7 @@ function App() {
         <Route path='/history' element={<History/>}/>
         <Route path='/manegement' element={<Manegement/>} />
         <Route path='/benefit' element={<Benefit/>} />
+        <Route path='*' element={<NotFound/>} />
       </Routes>
     </BrowserRouter>
   )

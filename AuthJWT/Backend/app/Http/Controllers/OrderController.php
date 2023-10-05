@@ -37,7 +37,7 @@ class OrderController extends Controller
                 $item->quantity = $order->quantity;
                 $item->sum = $order->sum;
                 $item->status = $order->status;
-                $item->created_at = $order->created_at;
+                $item->created_at = $order->created_at->format('Y-m-d H:i:s');
                 $data[] = $item;
             }
         }
@@ -61,7 +61,7 @@ class OrderController extends Controller
                 $item->quantity = $order->quantity;
                 $item->sum = $order->sum;
                 $item->status = $order->status;
-                $item->created_at = $order->created_at;
+                $item->created_at = $order->created_at->format('Y-m-d H:i:s');
                 $data[] = $item;
             }
         }
@@ -143,7 +143,6 @@ class OrderController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Updated!',
-            'product' => $products
         ]);
     }
     public function benefit()
@@ -217,7 +216,7 @@ class OrderController extends Controller
             'lastMonthSum' => $lastMonthSum,
             'todayQuantity' => $todayQuantity,
             'allQuantity' => $allQuantity,
-            'growth' => $growth,
+            'growth' => round($growth, 2),
         ]);
     }
 }

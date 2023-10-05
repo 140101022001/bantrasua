@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { BACKEND_URL, changeTime, getStatus } from '../api/userApi';
+import { BACKEND_URL, getStatus } from '../api/userApi';
 import { OrderType, SearchType } from '../types/OrderType';
 import useAuth from '../hooks/useAuth';
 import { status } from './Manegement';
@@ -22,6 +22,8 @@ const History = () => {
             .then((res: { data: OrderType[] }) => {
                 setData(res.data);
                 dispatch(orderState(res.data))
+                console.log(res.data);
+                
             })
             .catch(err => {
                 console.log(err);
@@ -95,7 +97,7 @@ const History = () => {
                                     <td>{item.price}</td>
                                     <td>{item.quantity}</td>
                                     <td>{item.sum}</td>
-                                    <td>{changeTime(String(item.created_at))}</td>
+                                    <td>{item.created_at}</td>
                                     <td>{getStatus(Number(item.status))}</td>
                                     <td>
                                         {

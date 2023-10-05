@@ -1,4 +1,4 @@
-import { BACKEND_URL, changeTime, getStatus } from "../api/userApi"
+import { BACKEND_URL, getStatus } from "../api/userApi"
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import { OrderType, SearchType } from "../types/OrderType";
@@ -39,7 +39,7 @@ const Manegement = () => {
                 console.log(err);
             })
     }
-
+    
     return (
         <div className="container home-ct">
             <div className="ctn-header">
@@ -65,6 +65,9 @@ const Manegement = () => {
             <div style={{ display: 'flex', marginTop: '80px', gap: '20px'}}>
                 <button className="btn btn-info" onClick={() => setType('today')}><span>今日</span></button>
                 <button className="btn btn-info" onClick={() => setType('all')}><span>全て</span></button>
+            </div>
+            <div style={{ marginTop: '20px'}}>
+                {type == 'today' ? <h3>今日の販売履歴</h3>: <h3>全ての販売履歴</h3>}
             </div>
             {currentItems.length > 0 ? <table className="table">
                 <thead>
@@ -92,7 +95,7 @@ const Manegement = () => {
                                 <td>{item.price}</td>
                                 <td>{item.quantity}</td>
                                 <td>{item.sum}</td>
-                                <td>{changeTime(String(item.created_at))}</td>
+                                <td>{item.created_at}</td>
                                 <td>{getStatus(Number(item.status))}</td>
                                 <td>{item.status === 0 ?
                                     <button className='btn btn-success' onClick={() => handleChangeStatus(item.id)}>準備完了</button>
